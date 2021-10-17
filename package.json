@@ -30,6 +30,8 @@
   },
   "dependencies": {
     "gh-pages": "^3.2.3",
-    "lodash.debounce": "^4.0.8"
+    "lo": "^0.41.0",
+    "lodash.debounce": "^4.0.8",
+    "pnotify": "^5.2.0"
   }
 }

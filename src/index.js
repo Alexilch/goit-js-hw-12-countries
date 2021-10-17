@@ -1,29 +1,75 @@
-// // import './sass/main.scss';
-// // import './partials/js/fetchCountries'
+import './sass/main.scss';
 
+import { alert, notice, info, success, error } from "@pnotify/core";
+import '@pnotify/core/dist/BrightTheme.css';
+import "@pnotify/core/dist/PNotify.css";
+import fetchCountries from './partials/js/fetchCountries';
+import countryMarkup from './templates/country.hbs';
+import countriesListMarkup from './templates/list.hbs'
+import debounce from "lodash.debounce";
 
-// const refs = {
-//     searchForm: document.querySelector('.search'),
-//     searchResultContainer: document.querySelector('.js-search-result-container')
-// }
+const refs = {
+  searchBar: document.querySelector('.search-input'),
+  cardContainer: document.querySelector('.js-card-container')
+}
 
-// // const fetchCountries = new fetchCountries()
+refs.searchBar.addEventListener('input', debounce(onSearch, 500))
+// refs.cardContainer.addEventListener('click', clearForm)
 
-// refs.searchForm.addEventListener('submit', onSearch);
+const fetchCountry = new fetchCountries();
 
-// function onSearch(e) {
-//     e.preventDefault();
+function onSearch(event) {
 
-//     searchQuery = e.currentTarget.elements.query.value;
-//     fetchCountries(searchQuery)
-// }
+  fetchCountry.country = event.target.value;
 
- 
-// function fetchCountries(searchQuery){
+  if (fetchCountry.searchQuery === '') {
+    refs.cardContainer.innerHTML = '';
+    return
+  }
+  
+  fetchCountry.fetchCountries()
+  .then(verifySearchResult)
+  .catch(notFound)
+}
 
-//     const url = `https://restcountries.com/v2/name/${searchQuery}`
-    
-//     fetch(url)
-//         .then(r => r.json())
-//         .then(console.log)
-//     }
+function verifySearchResult(searchQuery) {
+  const  result = searchQuery.length;
+    if (result > 10) {
+      return tooManyResults();
+    }
+    if (result >= 2 && result <= 10) {
+      return renderList(searchQuery)
+    }
+    if (result === 1) {
+      return renderCountry(searchQuery)
+    }
+    else {
+      return notFound()
+    }
+  }
+
+function renderCountry(searchQuery) {
+refs.cardContainer.innerHTML = countryMarkup(...searchQuery)
+}
+
+function renderList(searchQuery) {
+  refs.cardContainer.innerHTML = countriesListMarkup(searchQuery)
+}
+
+function notFound() {
+    error({
+      text: "Not found",
+      delay: 1500,
+    });
+  }
+
+function tooManyResults() {
+  notice({
+    text: "Too many matches found!",
+    delay: 1500,
+  });
+}
+
+//   function clearForm() {
+//       refs.inputSearch = ''
+//   }
