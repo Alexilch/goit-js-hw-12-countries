@@ -10,16 +10,14 @@ import debounce from "lodash.debounce";
 
 const refs = {
   searchBar: document.querySelector('.search-input'),
-  cardContainer: document.querySelector('.js-card-container')
+  cardContainer: document.querySelector('.js-result-container')
 }
 
 refs.searchBar.addEventListener('input', debounce(onSearch, 500))
-// refs.cardContainer.addEventListener('click', clearForm)
 
 const fetchCountry = new fetchCountries();
 
 function onSearch(event) {
-
   fetchCountry.country = event.target.value;
 
   if (fetchCountry.searchQuery === '') {
